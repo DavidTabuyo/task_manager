@@ -1,6 +1,6 @@
-use std::{env, fs::File, io::{self, BufRead, BufReader}};
+use std::{env, fs::{File, OpenOptions}, io::{self, BufRead, BufReader, Write}};
 
-
+#[derive(Clone)]
 struct Task{
     task_name: String,
     due: bool,
@@ -19,7 +19,7 @@ impl Task {
 
 fn get_tasks() -> io::Result<Vec<Task>>{
     let mut data: Vec<Task> = vec![];
-    let file = File::open("src/to_do_data.txt")?;
+    let file = File::open("/home/david/.task_manager/task_manager/src/to_do_data.txt")?;
     let reader = BufReader::new(file);
     for line in reader.lines(){
         let task_name = line?;
@@ -34,10 +34,24 @@ fn check_tasks(data: &mut Vec<Task>){
         println!("({}) {}",index,data[index].task_name);
     }
 }
-
+fn write_task(new_task:Task)-> io::Result<()>{
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("/home/david/.task_manager/task_manager/src/to_do_data.txt")?;
+    file.write_all(new_task.task_name.as_bytes())?;
+    Ok(())
+}
 
 fn add_tasks(data: &mut Vec<Task>){
-    println!("EScribe la tarea nueva");
+    println!("Escribe la tarea nueva");
+    let mut imput:String = String::new();
+    io::stdin().read_line(&mut imput).expect("Error al leer la entrada");
+    let new_task=Task::new(imput,false,"".to_string());
+    let cloned_task = new_task.clone();
+    data.push(new_task);
+    write_task(cloned_task).unwrap();
+    println!("Tarea escrita correctamente")
 }
 
 
@@ -57,10 +71,6 @@ fn mark_as_done(data: &mut Vec<Task>){
     }else{
         print!("Entrada no válida");
     }
-
-}
-fn save_changes(data: &mut Vec<Task>){
-    
 }
 
 fn main() {
