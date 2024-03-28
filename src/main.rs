@@ -7,6 +7,7 @@ struct Task{
     due: bool,
     time: String,
 }
+
 impl Task {
     fn new (task_name:String, due:bool,time:String) -> Task{
         Task{
@@ -16,11 +17,10 @@ impl Task {
         }
     }
 }
-// let my_task = Task = Tak::new(ss,ss,ss)
 
 fn get_tasks() -> io::Result<Vec<Task>>{
     let mut data: Vec<Task> = vec![];
-    let file = File::open("/home/david/.task_manager/task_manager/src/to_do_data.txt")?;
+    let file = File::open(". . . ")?;
     let reader = BufReader::new(file);
     for line in reader.lines(){
         let task_name = line?;
@@ -35,11 +35,12 @@ fn check_tasks(data: &mut Vec<Task>){
         println!("({}) {}",index,data[index].task_name);
     }
 }
+
 fn write_task(new_task:Task)-> io::Result<()>{
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
-        .open("/home/david/.task_manager/task_manager/src/to_do_data.txt")?;
+        .open(". . .")?;
     file.write_all(new_task.task_name.as_bytes())?;
     Ok(())
 }
@@ -55,10 +56,35 @@ fn add_tasks(data: &mut Vec<Task>){
     println!("Tarea escrita correctamente")
 }
 
+fn mark_as_done_task(task: Task) -> io::Result<()> {
+    //modify to_do file
+    let file = File::open(". . .")?;
+    let reader = BufReader::new(file);
+    let mut lines: Vec<String> = Vec::new();
 
-fn mark_as_done_task(task:Task){
-    //remove from txt and add to other txt
+    for result in reader.lines() {
+        let line = result?;
+        let trimmed_line = line.trim().to_string();
+        if trimmed_line != task.task_name {
+            lines.push(trimmed_line);
+        }
+    }
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(". . .")?;
+
+    for line in lines {
+        writeln!(file, "{}", line)?;
+    }
+    //modify done file
+    let mut done_file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(". . .")?;
+    writeln!(done_file, "{}: {}",task.time,task.task_name)?;
     
+    Ok(())
 }
 
 fn get_current_datetime() -> String {
@@ -75,12 +101,24 @@ fn mark_as_done(data: &mut Vec<Task>){
     if imput < data.len(){
         data[imput].due=true;
         data[imput].time= get_current_datetime();
-        mark_as_done_task(data[imput].clone());
+        mark_as_done_task(data[imput].clone()).unwrap();
         data.remove(imput);
         println!("tarea marcada como hecha")
     }else{
         println!("Entrada no válida");
     }
+}
+
+fn show_done_tasks() {
+    let file = File::open(". . . ").unwrap();
+    let reader = BufReader::new(file);
+    for line in reader.lines(){
+        println!("{}", line.unwrap());
+    }
+}
+
+fn check_done_tasks() {
+
 }
 
 fn main() {
@@ -94,6 +132,7 @@ fn main() {
             println!("(0) -> consultar tareas");
             println!("(1) -> Añadir tareas");
             println!("(2) -> Marcar como tarea hecha");
+            println!("(3) -> Mostrar tareas hechas");
             let mut imput:String = String::new();
             io::stdin().read_line(&mut imput).expect("Error al leer la entrada");
             let imput= imput.trim();
@@ -108,6 +147,10 @@ fn main() {
                 }
                 "2" => {
                     mark_as_done(&mut data);
+                    break;
+                }
+                "3" => {
+                    show_done_tasks();
                     break;
                 }
                 _ => {
@@ -129,6 +172,9 @@ fn main() {
             "2" => {
                 mark_as_done(&mut data)
             }
+            "3" => {
+                show_done_tasks();
+            }
             _ => {
                 println!("Entrada invalida, por favor, introduce otro número")
             }
@@ -138,4 +184,5 @@ fn main() {
         //number of arguments are incorrect
         print!("El número de argumentos es incorrecto . . . ")
     }
+    check_done_tasks()
 }
