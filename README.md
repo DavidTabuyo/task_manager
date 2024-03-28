@@ -13,3 +13,23 @@ Añadir el path a los ficheros en el código.
 
 Mejoras:
   - Añadir un máximo de 10 tareas hechas
+
+---------------------------------------------------
+Simple program written in Rust: The program can be executed with or without arguments. If executed with arguments:
+$cargo run
+The program will prompt you to choose from various options:
+0 -> Check tasks: Prints the tasks stored in the file to the screen.
+1 -> Add tasks: Prompts for the name of the task to be added and adds it to the file.
+2 -> Mark task as done: Marks a task as completed, removes it from the file, and adds it to another file with the date and time of completion.
+3 -> Show completed tasks: Displays tasks marked as completed.
+When the program is executed with arguments, it will directly execute one of the options.
+Example: $cargo run 1 will execute the "Add tasks" option.
+
+The program can be used as an alias in Linux, turning it into a command that can be used from anywhere in the system instantly. Add the path to the files in the code.
+
+Improvements:
+
+Limit the number of completed tasks to 10.
+
+
+
