@@ -1,4 +1,5 @@
 use std::{env, fs::{File, OpenOptions}, io::{self, BufRead, BufReader, Write}};
+use chrono::prelude::*;
 
 #[derive(Clone)]
 struct Task{
@@ -55,8 +56,14 @@ fn add_tasks(data: &mut Vec<Task>){
 }
 
 
-fn mark_as_done_task(index:usize){
-    //mark as done task, remove from txt and add to other txt
+fn mark_as_done_task(task:Task){
+    //remove from txt and add to other txt
+    
+}
+
+fn get_current_datetime() -> String {
+    let datetime = Utc::now();
+    return datetime.format("%Y-%m-%d %H:%M:%S").to_string();
 }
 
 fn mark_as_done(data: &mut Vec<Task>){
@@ -66,10 +73,13 @@ fn mark_as_done(data: &mut Vec<Task>){
     io::stdin().read_line(&mut imput).expect("Error al leer la entrada");
     let imput:usize= imput.trim().parse().expect("Entrada no válida");
     if imput < data.len(){
-        mark_as_done_task(imput);
+        data[imput].due=true;
+        data[imput].time= get_current_datetime();
+        mark_as_done_task(data[imput].clone());
         data.remove(imput);
+        println!("tarea marcada como hecha")
     }else{
-        print!("Entrada no válida");
+        println!("Entrada no válida");
     }
 }
 
